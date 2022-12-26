@@ -25,10 +25,10 @@ void NewClientListenerTask::run(void *data){
     }
 
     /** if client don't send mqttpacket**/
-    if (!client.available())
-    {
-      continue; // next iteration.
-    } 
+//     if (!client.available())
+//     {
+//       continue; // next iteration.
+//     } 
 
     /*reading bytes from client, in this point Broker only recive and
      acept connect mqtt packets**/
