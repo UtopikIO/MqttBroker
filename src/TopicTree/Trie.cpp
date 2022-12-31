@@ -1,5 +1,5 @@
 #include "MqttBroker/MqttBroker.h"
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 /****************************************** Trie Class *********************************************/
 Trie::Trie()
 {

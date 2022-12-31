@@ -12,7 +12,7 @@
 
 #include <WiFi.h> 
 #include "EmbeddedMqttBroker.h"
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 const char *ssid = "...";
 const char *password = "***";
 const char *AP_NameChar = "WebServerAndBroker";

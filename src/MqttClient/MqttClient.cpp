@@ -1,5 +1,5 @@
 #include "MqttBroker/MqttBroker.h"
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 /***************************** MqttClient class *************************/
 MqttClient::~MqttClient()
 {

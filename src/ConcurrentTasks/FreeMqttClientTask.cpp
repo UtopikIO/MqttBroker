@@ -1,5 +1,5 @@
 #include "MqttBroker/MqttBroker.h"
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 /********************** FreeMqttClientTask *************************/
 
 FreeMqttClientTask::FreeMqttClientTask(MqttBroker *broker, QueueHandle_t *deleteMqttClientQueue) : Task("FreeMqttClientTask", 1024 * 2, TaskPrio_Low)

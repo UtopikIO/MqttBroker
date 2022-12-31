@@ -1,5 +1,5 @@
 #include "MqttBroker/MqttBroker.h"
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 NoAction::NoAction(MqttClient *mqttClient) : Action(mqttClient)
 {
 }

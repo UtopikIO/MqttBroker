@@ -1,7 +1,7 @@
 #include "MqttBroker/MqttBroker.h"
 
 /****************************** NodeTrie Class *****************************************/
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 NodeTrie::NodeTrie()
 {
     character = '\0';
