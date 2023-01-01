@@ -1,8 +1,9 @@
 #include "MqttBroker.h"
+
 using namespace EmbeddedMqttBroker;
+
 MqttBroker::~MqttBroker()
 {
-
   // delete listenerTask
   newClientListenerTask->stopListen();
   delete newClientListenerTask;
@@ -12,7 +13,7 @@ MqttBroker::~MqttBroker()
   delete freeMqttClientTask;
 
   // delete all MqttClients
-  std::map<int, MqttClient *>::iterator it;
+  std::map<String, MqttClient *>::iterator it;
   for (it = clients.begin(); it != clients.end(); it++)
   {
     delete it->second;
@@ -45,16 +46,18 @@ MqttBroker::MqttBroker(uint16_t port)
 
 void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage connectMessage)
 {
+  String clientID = connectMessage.getClientId();
 
-  MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, numClient, connectMessage.getKeepAlive(), this);
-  clients.insert(std::make_pair(numClient, mqttClient));
+  MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, clientID, connectMessage.getKeepAlive(), this);
   mqttClient->startTcpListener();
-  log_i("New client added");
+
+  clients.insert(std::make_pair(clientID, mqttClient));
+
+  log_i("New client added: %s", clientID.c_str());
   log_i("%i clients active", clients.size());
-  numClient++;
 }
 
-void MqttBroker::deleteMqttClient(int clientId)
+void MqttBroker::deleteMqttClient(String clientId)
 {
   MqttClient *client = clients[clientId];
   clients.erase(clientId);
@@ -75,9 +78,9 @@ void MqttBroker::stopBroker()
 
 void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 {
-  std::vector<int> *clientsSubscribedIds = topicTrie->getSubscribedMqttClients(publishMqttMessage->getTopic().getTopic());
+  std::vector<String> *clientsSubscribedIds = topicTrie->getSubscribedMqttClients(publishMqttMessage->getTopic().getTopic());
 
-  log_i("Publishing: %s", publishMqttMessage->getTopic().getTopic());
+  log_v("Publishing to topic %s", publishMqttMessage->getTopic().getTopic().c_str());
 
   for (std::size_t it = 0; it != clientsSubscribedIds->size(); it++)
   {
@@ -89,12 +92,11 @@ void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 
 void MqttBroker::SubscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client)
 {
-
   std::vector<MqttTocpic> topics = subscribeMqttMessage->getTopics();
-  log_i("Client $i subscribed to %s", client->getId(), topics[0].getTopic());
   NodeTrie *node;
   for (int i = 0; i < topics.size(); i++)
   {
+    log_i("Client %s subscribed to %s", client->getId().c_str(), topics[i].getTopic().c_str());
     node = topicTrie->subscribeToTopic(topics[i].getTopic(), client);
     client->addNode(node);
   }

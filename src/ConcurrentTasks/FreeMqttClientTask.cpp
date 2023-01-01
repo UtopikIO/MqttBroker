@@ -11,7 +11,7 @@ FreeMqttClientTask::FreeMqttClientTask(MqttBroker *broker, QueueHandle_t *delete
 void FreeMqttClientTask::run(void *data)
 {
 
-  int clientId;
+  String clientId;
   while (true)
   {
 

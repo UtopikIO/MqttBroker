@@ -15,7 +15,7 @@ MqttClient::~MqttClient()
   }
 }
 
-MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue, int clientId, uint16_t keepAlive, MqttBroker *broker)
+MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue, String clientId, uint16_t keepAlive, MqttBroker *broker)
 {
   this->clientId = clientId;
   this->keepAlive = keepAlive;
@@ -93,7 +93,7 @@ void MqttClient::sendPacketByTcpConnection(String mqttPacket)
 void MqttClient::sendPingRes()
 {
   String resPacket = messagesFactory.getPingResMessage().buildMqttPacket();
-  log_i("Sending ping response");
+  log_v("Sending ping response");
   sendPacketByTcpConnection(resPacket);
 }
 

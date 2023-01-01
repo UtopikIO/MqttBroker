@@ -47,7 +47,7 @@ namespace EmbeddedMqttBroker
     QueueHandle_t deleteMqttClientQueue;
 
     /************************* clients structure **************************/
-    std::map<int, MqttClient *> clients;
+    std::map<String, MqttClient *> clients;
 
   public:
     /**
@@ -83,7 +83,7 @@ namespace EmbeddedMqttBroker
      *
      * @param clientId
      */
-    void deleteMqttClient(int clientId);
+    void deleteMqttClient(String clientId);
 
     /**
      * @brief publish a mqtt message arrived to all mqtt clients interested.
@@ -231,7 +231,7 @@ namespace EmbeddedMqttBroker
   {
   private:
     // client id in the scope of this broker.
-    int clientId;
+    String clientId;
     WiFiClient tcpConnection;
 
     uint16_t keepAlive;
@@ -270,7 +270,7 @@ namespace EmbeddedMqttBroker
      * @param keepAlive max time that the broker wait to a mqtt client, if mqtt client doesn't send
      * any message to the broker in this time, broker will close the tcp connection.
      */
-    MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue, int clientId, uint16_t keepAlive, MqttBroker *broker);
+    MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue, String clientId, uint16_t keepAlive, MqttBroker *broker);
 
     ~MqttClient();
 
@@ -279,7 +279,7 @@ namespace EmbeddedMqttBroker
      *
      * @return int id of the client.
      */
-    int getId() { return clientId; }
+    String getId() { return clientId; }
 
     /**
      * @brief Notify to the listeners of this MqttClient the new publish
@@ -552,7 +552,7 @@ namespace EmbeddedMqttBroker
   private:
     char character;
     NodeTrie *bro, *son;
-    std::map<int, MqttClient *> *subscribedClients;
+    std::map<String, MqttClient *> *subscribedClients;
 
     /**
      * @brief When some client subscribe to a topic usin "+" wildcard, the tree
@@ -563,7 +563,7 @@ namespace EmbeddedMqttBroker
      * @param topic where is looking for in the tree.
      * @param index where start the topic level.
      */
-    void matchWithPlusWildCard(std::vector<int> *clientsIds, String topic, int index);
+    void matchWithPlusWildCard(std::vector<String> *clientsIds, String topic, int index);
 
     /**
      * @brief When some client subscribe to a topic usin "#" wildcard, the tree
@@ -572,7 +572,7 @@ namespace EmbeddedMqttBroker
      * @param clientsIds vector where store the id of mqttClients.
      * @param topic where is looking for in the tree.
      */
-    void matchWithNumberSignWildCard(std::vector<int> *clientsIds, String topic);
+    void matchWithNumberSignWildCard(std::vector<String> *clientsIds, String topic);
 
   public:
     NodeTrie();
@@ -618,7 +618,7 @@ namespace EmbeddedMqttBroker
      *
      * @return std::map<int, MqttClient*>*.
      */
-    std::map<int, MqttClient *> *getSubscribedMqttClients()
+    std::map<String, MqttClient *> *getSubscribedMqttClients()
     {
       return subscribedClients;
     }
@@ -631,7 +631,7 @@ namespace EmbeddedMqttBroker
      * @param topic that clients are subscribed.
      * @param index where start the proccesing of topic.
      */
-    void findSubscribedMqttClients(std::vector<int> *clientsIds, String topic, int index);
+    void findSubscribedMqttClients(std::vector<String> *clientsIds, String topic, int index);
 
     void unSubscribeMqttClient(MqttClient *mqttClient)
     {
@@ -704,7 +704,7 @@ namespace EmbeddedMqttBroker
      * @param topic that mqttClients are subscribed.
      * @return std::vector<int>* vector where are all id of the mqttClients subscribed to this topic.
      */
-    std::vector<int> *getSubscribedMqttClients(String topic);
+    std::vector<String> *getSubscribedMqttClients(String topic);
   };
 
 #endif // MQTTBROKER_H
