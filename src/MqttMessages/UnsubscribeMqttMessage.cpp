@@ -14,7 +14,7 @@ UnsubscribeMqttMessage::UnsubscribeMqttMessage(ReaderMqttPacket packetReaded):Mq
 int UnsubscribeMqttMessage::decodeTopics(int index, ReaderMqttPacket packetReaded){
     
     while (index < packetReaded.getRemainingPacketLength() ){
-        MqttTocpic topic;
+        MqttTopic topic;
         index = packetReaded.decodeTopic(index, &topic);
         topics.push_back(topic);       
     }

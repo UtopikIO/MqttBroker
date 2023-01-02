@@ -4,7 +4,7 @@
 #include "MqttMessage.h"
 #include "ReaderMqttPacket.h"
 #include "MqttMessagesSerealizable.h"
-#include "MqttTocpic.h"
+#include "MqttTopic.h"
 
 /**
  * @brief Publish mqtt message, Client can sends a publish mqtt packet
@@ -18,7 +18,7 @@
 class PublishMqttMessage : public MqttMessage, public MqttMessageSerealizable
 {
 private:
-    MqttTocpic topic;
+    MqttTopic topic;
     uint16_t messageId;
 
 
@@ -61,9 +61,9 @@ public:
      * @param publishFlags 
      * @param topic 
      */
-    PublishMqttMessage(uint8_t publishFlags, MqttTocpic topic);
+    PublishMqttMessage(uint8_t publishFlags, MqttTopic topic);
     
-    bool isTopic(MqttTocpic topic){
+    bool isTopic(MqttTopic topic){
         return this->topic.isTopic(topic);
     }
 
@@ -84,7 +84,7 @@ public:
         this->messageId = messageId;
     }
 
-    MqttTocpic getTopic(){
+    MqttTopic getTopic(){
         return topic;
     }
 

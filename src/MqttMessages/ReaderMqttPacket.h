@@ -3,7 +3,7 @@
 
 #include "WiFi.h"
 #include "MqttMessage.h"
-#include "MqttTocpic.h"
+#include "MqttTopic.h"
 /**
  * @brief Class to Read mqtt packet in byte coding, from tcp connection.
  * tcp connection provides a stream of bytes that we can left in byte buffers.
@@ -133,7 +133,7 @@ class ReaderMqttPacket {
          * @return int the index where the current field ends and start the next
              *         mqtt field.
          */
-        int decodeTopic(int index,MqttTocpic *topic);
+        int decodeTopic(int index,MqttTopic *topic);
         
         /**
          * @brief Extrat payLoad from bytes buffer that is encoding all mqtt variable header.
@@ -145,7 +145,7 @@ class ReaderMqttPacket {
          * @return int the index where the current field ends and start the next
          *         mqtt field.  
          */
-        int decodePayLoad(int index, MqttTocpic *topic);
+        int decodePayLoad(int index, MqttTopic *topic);
 
         /**
          * @brief Extract qos level for a subscribe topic from raw mqtt packet in bytes buffer.
@@ -155,7 +155,7 @@ class ReaderMqttPacket {
          * @return int the index where the current field ends and start the next
          *         mqtt field. 
          */
-        int decodeQosTopic(int index,MqttTocpic *topic);   
+        int decodeQosTopic(int index,MqttTopic *topic);   
 
         
         /**

@@ -3,7 +3,7 @@
 
 #include "MqttMessage.h"
 #include <vector>
-#include "MqttTocpic.h"
+#include "MqttTopic.h"
 #include "ReaderMqttPacket.h"
 
 /**
@@ -14,7 +14,7 @@
 class UnsubscribeMqttMessage:public MqttMessage
 {
 private:
-    std::vector<MqttTocpic> topics;
+    std::vector<MqttTopic> topics;
     uint16_t messageId;
 
    /**

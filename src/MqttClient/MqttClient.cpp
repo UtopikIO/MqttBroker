@@ -86,7 +86,6 @@ void MqttClient::notifyPublishRecived(PublishMqttMessage *publishMessage)
 
 void MqttClient::sendPacketByTcpConnection(String mqttPacket)
 {
-
   tcpConnection.write(mqttPacket.c_str(), mqttPacket.length()); // ok!!
 }
 

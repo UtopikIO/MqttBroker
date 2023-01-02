@@ -2,7 +2,7 @@
 #define SUBSCRIBEMQTTMESSAGE_H
 
 #include "MqttMessage.h"
-#include "MqttTocpic.h"
+#include "MqttTopic.h"
 #include "ReaderMqttPacket.h"
 #include <vector>
 
@@ -18,7 +18,7 @@ private:
      * @brief Subscribed topics.
      * 
      */
-    std::vector<MqttTocpic> topics;
+    std::vector<MqttTopic> topics;
     uint16_t messageId;
 
     /**
@@ -42,7 +42,7 @@ public:
      */
     SubscribeMqttMessage(ReaderMqttPacket packetReaded);
 
-    std::vector<MqttTocpic> getTopics(){
+    std::vector<MqttTopic> getTopics(){
         return topics;
     }
 };
