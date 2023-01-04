@@ -46,23 +46,54 @@ MqttBroker::MqttBroker(uint16_t port)
 
 void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage connectMessage)
 {
-  String clientID = connectMessage.getClientId();
+  String clientId = connectMessage.getClientId();
 
-  MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, clientID, connectMessage.getKeepAlive(), this);
+  std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
+  it = clients.find(clientId.c_str());
+  if (it != clients.end())
+  {
+    log_w("Client %s already exist", clientId.c_str());
+    deleteMqttClient(clientId);
+  }
+
+  MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, connectMessage.getClientId(), connectMessage.getKeepAlive(), this);
   mqttClient->startTcpListener();
 
-  clients.insert(std::make_pair(clientID, mqttClient));
+  clients.insert(std::make_pair(connectMessage.getClientId(), mqttClient));
 
-  log_i("New client added: %s", clientID.c_str());
+  log_i("New client added: %s", mqttClient->getId().c_str());
   log_i("%i clients active", clients.size());
 }
 
 void MqttBroker::deleteMqttClient(String clientId)
 {
-  MqttClient *client = clients[clientId];
-  clients.erase(clientId);
-  delete client;
-  log_i("%i clients active", clients.size());
+  log_i("Deleting client: %s", clientId.c_str());
+
+  std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
+  for (it = clients.begin(); it != clients.end(); it++)
+  {
+    // log_v("%s", it->first.c_str());
+    if (!strcmp(it->first.c_str(), clientId.c_str()))
+    {
+      MqttClient *client = it->second;
+      clients.erase(it);
+      delete client;
+      log_v("Client %s deleted", clientId.c_str());
+      log_i("%i clients active", clients.size());
+      return;
+    }
+  }
+
+  // Do not work
+  // std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it = clients.find(clientId.c_str());
+  // if (it != clients.end())
+  // {
+  //   log_e("Client %s not found", clientId.c_str());
+  //   log_i("%i clients active", clients.size());
+  //   return;
+  // }
+
+  // log_i("%i clients active", clients.size());
 }
 
 void MqttBroker::startBroker()

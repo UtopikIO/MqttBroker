@@ -6,7 +6,6 @@ ActionFactory::ActionFactory() {}
 
 Action *ActionFactory::getAction(MqttClient *mqttClient, ReaderMqttPacket packetReaded)
 {
-
   uint8_t type = packetReaded.getFixedHeader() >> 4;
   type = packetReaded.getFixedHeader() >> 4;
 

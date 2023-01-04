@@ -298,6 +298,7 @@ namespace EmbeddedMqttBroker
      */
     void notifyDeleteClient()
     {
+      log_v("Notify delete client: %s", clientId.c_str());
       xQueueSend((*deleteMqttClientQueue), &clientId, portMAX_DELAY);
     }
 
