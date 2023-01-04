@@ -84,6 +84,8 @@ void MqttBroker::deleteMqttClient(String clientId)
     }
   }
 
+  log_e("Client %s not found", clientId.c_str());
+
   // Do not work
   // std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it = clients.find(clientId.c_str());
   // if (it != clients.end())

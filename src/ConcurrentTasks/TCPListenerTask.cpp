@@ -7,7 +7,6 @@ TCPListenerTask::TCPListenerTask(MqttClient *mqttClient) : Task("TCPListener", 1
 
 void TCPListenerTask::run(void *data)
 {
-
   while (true)
   {
     if (!mqttClient->checkConnection())
