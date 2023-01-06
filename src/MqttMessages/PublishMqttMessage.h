@@ -9,86 +9,88 @@
 /**
  * @brief Publish mqtt message, Client can sends a publish mqtt packet
  * this class abstracts how to decode this mqtt packet.
- * 
+ *
  * For other side, broker needs to resend the mqtt publish packet to others clients,
  * This class abstracts how to encode and build a mqtt publish packet to
  * send by tcp connection.
- * 
+ *
  */
 class PublishMqttMessage : public MqttMessage, public MqttMessageSerealizable
 {
 private:
-    MqttTopic topic;
-    uint16_t messageId;
+  MqttTopic topic;
+  uint16_t messageId;
 
-
-    /**
-     * @brief Concatenate encoded size according to mqtt packet formar. 
-     * 
-     * @param encodedSize size to concatenate.
-     * @param mqttPacket String where concat the encodedSize.
-     * @return String with encodedSize concatenated.
-     */
-    String concatEncodedSize(uint32_t encodedSize, String mqttPacket);
+  /**
+   * @brief Concatenate encoded size according to mqtt packet formar.
+   *
+   * @param encodedSize size to concatenate.
+   * @param mqttPacket String where concat the encodedSize.
+   * @return String with encodedSize concatenated.
+   */
+  String concatEncodedSize(uint32_t encodedSize, String mqttPacket);
 
 public:
+  PublishMqttMessage() : MqttMessage(PUBLISH, 0)
+  {
+  }
+  /**
+   * @brief Construct a new Publish Mqtt Message object, this method
+   * create a PublishMqttMessage from raw bytes buffer readed directly
+   * from a tcp connection.
+   *
+   * @param packetReaded object who contains bytes readed from tcp connection.
+   */
+  PublishMqttMessage(ReaderMqttPacket packetReaded);
 
-    PublishMqttMessage():MqttMessage(PUBLISH,0){
-        
-    }
-    /**
-     * @brief Construct a new Publish Mqtt Message object, this method
-     * create a PublishMqttMessage from raw bytes buffer readed directly 
-     * from a tcp connection.
-     * 
-     * @param packetReaded object who contains bytes readed from tcp connection. 
-     */
-    PublishMqttMessage(ReaderMqttPacket packetReaded);
-    
-    /**
-     * @brief Construct a new Publish Mqtt Message object indicating
-     * his publish flasgs: dup,qos,retain.
-     * 
-     * @param publishFlags for this mqtt publish message.
-     */
-    PublishMqttMessage(uint8_t publishFlags);
+  /**
+   * @brief Construct a new Publish Mqtt Message object indicating
+   * his publish flasgs: dup,qos,retain.
+   *
+   * @param publishFlags for this mqtt publish message.
+   */
+  PublishMqttMessage(uint8_t publishFlags);
 
-    /**
-     * @brief Construct a new Publish Mqtt Message object, with
-     * a MqttTopic object and publishFlags, it is used for create
-     * a PublishMqttMessage that broker want to send to clients.
-     * 
-     * @param publishFlags 
-     * @param topic 
-     */
-    PublishMqttMessage(uint8_t publishFlags, MqttTopic topic);
-    
-    bool isTopic(MqttTopic topic){
-        return this->topic.isTopic(topic);
-    }
+  /**
+   * @brief Construct a new Publish Mqtt Message object, with
+   * a MqttTopic object and publishFlags, it is used for create
+   * a PublishMqttMessage that broker want to send to clients.
+   *
+   * @param publishFlags
+   * @param topic
+   */
+  PublishMqttMessage(uint8_t publishFlags, MqttTopic topic);
 
-    String buildMqttPacket();
+  bool isTopic(MqttTopic topic)
+  {
+    return this->topic.isTopic(topic);
+  }
 
-    void setTopic(String topic){
-        this->topic.setTopic(topic);
-    }
+  String buildMqttPacket();
 
-    void setPayLoad(String payLoad){
-        this->topic.setPayLoad(payLoad);
-    }
+  void setTopic(String topic)
+  {
+    this->topic.setTopic(topic);
+  }
 
-    void setQos(uint8_t qos){
-        this->topic.setQos(qos);
-    }
-    void setMessageId(uint16_t messageId){
-        this->messageId = messageId;
-    }
+  void setPayLoad(String payLoad)
+  {
+    this->topic.setPayLoad(payLoad);
+  }
 
-    MqttTopic getTopic(){
-        return topic;
-    }
+  void setQos(uint8_t qos)
+  {
+    this->topic.setQos(qos);
+  }
+  void setMessageId(uint16_t messageId)
+  {
+    this->messageId = messageId;
+  }
 
+  MqttTopic getTopic()
+  {
+    return topic;
+  }
 };
-
 
 #endif

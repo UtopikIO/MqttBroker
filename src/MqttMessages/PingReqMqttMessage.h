@@ -5,16 +5,15 @@
 
 /**
  * @brief Class to abstract a pingReqMqttMessage.
- * 
+ *
  */
-class PingReqMqttMessage: public MqttMessage
+class PingReqMqttMessage : public MqttMessage
 {
 private:
-    
 public:
-    PingReqMqttMessage():MqttMessage(PINGREQ,RESERVERTO0){
-
-    }
+  PingReqMqttMessage() : MqttMessage(PINGREQ, RESERVERTO0)
+  {
+  }
 };
 
-#endif //PINGREQMQTTMESSAGE_H
+#endif // PINGREQMQTTMESSAGE_H

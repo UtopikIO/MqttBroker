@@ -10,13 +10,12 @@ FreeMqttClientTask::FreeMqttClientTask(MqttBroker *broker, QueueHandle_t *delete
 
 void FreeMqttClientTask::run(void *data)
 {
-  // String *clientId;
-  std::string *pStr = NULL;
+  String *clientId = NULL;
   while (true)
   {
-    xQueueReceive((*deleteMqttClientQueue), &pStr, portMAX_DELAY);
-    log_i("Deleting client: %s", pStr->c_str());
-    broker->deleteMqttClient(pStr->c_str());
-    delete pStr;
+    xQueueReceive((*deleteMqttClientQueue), &clientId, portMAX_DELAY);
+    log_i("Deleting client: %s", clientId->c_str());
+    broker->deleteMqttClient(clientId->c_str());
+    delete clientId;
   }
 }

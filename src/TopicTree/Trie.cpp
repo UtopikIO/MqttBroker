@@ -56,9 +56,7 @@ bool Trie::find(String topic)
   while (topic[i] != '$')
   {
     if (tmp->find(topic[i]) == NULL)
-    {
       return false;
-    }
 
     tmp = tmp->find(topic[i]); // down to the next level.
     i++;

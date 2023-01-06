@@ -36,8 +36,6 @@ namespace EmbeddedMqttBroker
   private:
     uint16_t port;
     uint16_t maxNumClients;
-    // unique id in the scope of this broker.
-    int numClient = 0;
 
     NewClientListenerTask *newClientListenerTask;
     FreeMqttClientTask *freeMqttClientTask;
@@ -233,6 +231,7 @@ namespace EmbeddedMqttBroker
     // client id in the scope of this broker.
     String clientId;
     WiFiClient tcpConnection;
+    bool deleting = false;
 
     uint16_t keepAlive;
     unsigned long lastAlive;
@@ -291,16 +290,22 @@ namespace EmbeddedMqttBroker
     void notifyPublishRecived(PublishMqttMessage *publishMessage);
 
     /**
-     * @brief When the mqtt client disconnects, its should be removed from map structure
+     * @brief When the mqtt client disconnects, its should be removed from vector structure
      * and its allocated memory should be freed. This method notifies the corresponding task
      * that this mqtt client should be removed.
      *
      */
     void notifyDeleteClient()
     {
-      std::string *pStr = new std::string(clientId.c_str());
-      log_v("Notify delete client: %s", pStr->c_str());
-      xQueueSend((*deleteMqttClientQueue), &pStr, portMAX_DELAY);
+      if (deleting) // Avoid spam
+        return;
+
+      std::string *pClientId = new std::string(clientId.c_str());
+      log_v("Notify broker to delete client: %s", pClientId->c_str());
+      if (xQueueSend((*deleteMqttClientQueue), &pClientId, portMAX_DELAY))
+        deleting = true;
+      else
+        log_e("Queue full. Retrying in few.");
     }
 
     /**
@@ -707,7 +712,7 @@ namespace EmbeddedMqttBroker
      * to free the memory allocated to avoid memory holes.
      *
      * @param topic that mqttClients are subscribed.
-     * @return std::vector<int>* vector where are all id of the mqttClients subscribed to this topic.
+     * @return std::vector<MqttClient *>* vector where are all id of the mqttClients subscribed to this topic.
      */
     std::vector<MqttClient *> *getSubscribedMqttClients(String topic);
   };

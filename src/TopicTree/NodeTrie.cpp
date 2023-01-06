@@ -109,17 +109,13 @@ void NodeTrie::findSubscribedMqttClients(std::vector<MqttClient *> *clients, Str
     // if character is not present, means that this topic is
     // not present in the tree, no body subcribe to this topic.
     if (tmp->find(topic[i]) == NULL)
-    {
       return;
-    }
 
     tmp = tmp->find(topic[i]);
     // begin of topic level detected.
     if (topic[i] == '/')
-    {
       // explore "+" and/or "#" sub-branchs if there are present in this level.
       tmp->findSubscribedMqttClients(clients, topic, i);
-    }
     i++; // next character.
   }
 
@@ -139,31 +135,24 @@ void NodeTrie::matchWithPlusWildCard(std::vector<MqttClient *> *clients, String 
 {
   NodeTrie *plusWildCard = this->find('+');
   if (plusWildCard == NULL)
-  {
     return; // there is not "+" wildcard in this topic level.
-  }
 
   // ***** explorer ("/prefix/"->"+"->"/"->"some suffix$"), branch. ****************
   int indexAux = index;
   indexAux++;
   indexAux = topic.indexOf('/', indexAux);
   if (indexAux != -1)
-  {
     plusWildCard->findSubscribedMqttClients(clients, topic, indexAux);
-  }
 
   // ***** explorer ("/prefix/"->"+"->"$"), branch. *******************
   plusWildCard = plusWildCard->find('$');
   if (plusWildCard == NULL)
-  {
     return; // no body subscribed at /prefix/+ topic in this topic level.
-  }
 
   indexAux = index;
   indexAux++;
   if ((topic.indexOf('/', indexAux) == -1))
   {
-
     indexAux = topic.length() - 1;
     plusWildCard->findSubscribedMqttClients(clients, topic, indexAux);
   }
@@ -173,9 +162,7 @@ void NodeTrie::matchWithNumberSignWildCard(std::vector<MqttClient *> *clients, S
 {
   NodeTrie *numberSingWildCard = this->find('#');
   if (numberSingWildCard == NULL)
-  {
     return;
-  }
 
   int index = topic.length() - 1;
   numberSingWildCard->findSubscribedMqttClients(clients, topic, index);
@@ -190,6 +177,7 @@ void NodeTrie::unSubscribeMqttClient(MqttClient *mqttClient)
   if (it == subscribedClients->end())
   {
     log_e("Client %s not found", clientId);
+
     return;
   }
 

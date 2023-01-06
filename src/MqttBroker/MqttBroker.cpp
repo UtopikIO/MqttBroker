@@ -51,11 +51,9 @@ void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage conne
   auto it = find_if(clients.begin(), clients.end(), [&clientId](MqttClient *obj)
                     { return obj->getId() == clientId; });
 
-  // std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
-  // it = clients.find(clientId.c_str());
   if (it != clients.end())
   {
-    log_w("Client %s already exist", clientId.c_str());
+    log_w("Client %s already exist.", clientId.c_str());
     deleteMqttClient(clientId);
   }
 
@@ -75,41 +73,16 @@ void MqttBroker::deleteMqttClient(String clientId)
   auto it = find_if(clients.begin(), clients.end(), [&clientId](MqttClient *obj)
                     { return obj->getId() == clientId.c_str(); });
 
-  if (it != clients.end())
+  if (it == clients.end())
   {
-    clients.erase(it);
-    delete *it;
-    log_v("Client %s deleted", clientId.c_str());
-    log_i("%i clients active", clients.size());
+    log_e("Client %s not found", clientId.c_str());
     return;
   }
-  // std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
-  // for (it = clients.begin(); it != clients.end(); it++)
-  // {
-  //   // log_v("%s", it->first.c_str());
-  //   if (!strcmp(it->first.c_str(), clientId.c_str()))
-  //   {
-  //     MqttClient *client = it->second;
-  //     clients.erase(it);
-  //     delete client;
-  //     log_v("Client %s deleted", clientId.c_str());
-  //     log_i("%i clients active", clients.size());
-  //     return;
-  //   }
-  // }
 
-  log_e("Client %s not found", clientId.c_str());
-
-  // Do not work
-  // std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it = clients.find(clientId.c_str());
-  // if (it != clients.end())
-  // {
-  //   log_e("Client %s not found", clientId.c_str());
-  //   log_i("%i clients active", clients.size());
-  //   return;
-  // }
-
-  // log_i("%i clients active", clients.size());
+  clients.erase(it);
+  delete *it;
+  log_v("Client %s deleted", clientId.c_str());
+  log_i("%i clients active", clients.size());
 }
 
 void MqttBroker::startBroker()
@@ -153,12 +126,6 @@ void MqttBroker::SubscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessa
   {
     node = topicTrie->subscribeToTopic(topic.getTopic(), client);
     client->addNode(node);
-    log_i("Client %s subscribed to %s", client->getId().c_str(), topic.getTopic().c_str());
+    log_i("Client %s subscribed to %s.", client->getId().c_str(), topic.getTopic().c_str());
   }
-  // for (int i = 0; i < topics.size(); i++)
-  // {
-  //   log_i("Client %s subscribed to %s", client->getId().c_str(), topics[i].getTopic().c_str());
-  //   node = topicTrie->subscribeToTopic(topics[i].getTopic(), client);
-  //   client->addNode(node);
-  // }
 }
