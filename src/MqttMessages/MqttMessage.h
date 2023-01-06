@@ -4,8 +4,8 @@
 #include "WiFi.h"
 #include "ControlPacketType.h"
 /**
- * @brief This class is an interfaz for the diferents mqtt packets.
- * When broker receives a mqtt packet, doesn't now what kind of packet is,
+ * @brief This class is an interface for the diferents mqtt packets.
+ * When broker receives a mqtt packet, it doesn't know what kind of packet is,
  * Factory GRASP pattern solves this problem.
  *
  * Mqtt packets has three parts:

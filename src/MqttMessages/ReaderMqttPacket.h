@@ -3,7 +3,7 @@
 
 #include "WiFi.h"
 #include "MqttMessage.h"
-#include "MqttTopic.h"
+#include "MqttTopicPayload.h"
 /**
  * @brief Class to Read mqtt packet in byte coding, from tcp connection.
  * tcp connection provides a stream of bytes that we can left in byte buffers.
@@ -125,11 +125,11 @@ public:
    * @brief Get topic from mqtt packet.
    *
    * @param index where start the lengt of mqtt topic field.
-   * @param topic MqttTopic where store the char* topic readed from tcpConnection.
+   * @param topic MqttTopicPayload where store the char* topic readed from tcpConnection.
    * @return int the index where the current field ends and start the next
    *         mqtt field.
    */
-  int decodeTopic(int index, MqttTopic *topic);
+  int decodeTopic(int index, MqttTopicPayload *topic);
 
   /**
    * @brief Extrat payLoad from bytes buffer that is encoding all mqtt variable header.
@@ -137,21 +137,21 @@ public:
    * @param index where start the payload mqtt field. Note that the size of payLoad is calculated,
    *        it is know the size of  variableHeader buff (remainingLengt), and using the above methos, it is
    *        now know many bytes are readed, payLoad length is variableHeaderLength - index.
-   * @param topic MqttTopic where store payload.
+   * @param topic MqttTopicPayload where store payload.
    * @return int the index where the current field ends and start the next
    *         mqtt field.
    */
-  int decodePayLoad(int index, MqttTopic *topic);
+  int decodePayLoad(int index, MqttTopicPayload *topic);
 
   /**
    * @brief Extract qos level for a subscribe topic from raw mqtt packet in bytes buffer.
    *
    * @param index where start the qos mqtt field.
-   * @param topic pointer to MqttTopic where store qos level.
+   * @param topic pointer to MqttTopicPayload where store qos level.
    * @return int the index where the current field ends and start the next
    *         mqtt field.
    */
-  int decodeQosTopic(int index, MqttTopic *topic);
+  int decodeQosTopic(int index, MqttTopicPayload *topic);
 
   /**
    * @brief Get one byte from remaining buff and put into

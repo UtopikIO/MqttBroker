@@ -120,7 +120,7 @@ void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 
 void MqttBroker::SubscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client)
 {
-  std::vector<MqttTopic> topics = subscribeMqttMessage->getTopics();
+  std::vector<MqttTopicPayload> topics = subscribeMqttMessage->getTopics();
   NodeTrie *node;
   for (auto &topic : topics)
   {

@@ -1,7 +1,7 @@
-#ifndef MQTTTOPIC_H
-#define MQTTTOPIC_H
+#ifndef MQTTTOPICPAYLOAD_H
+#define MQTTTOPICPAYLOAD_H
 
-class MqttTopic
+class MqttTopicPayload
 {
 private:
   String topic;
@@ -9,8 +9,8 @@ private:
   String payLoad;
 
 public:
-  MqttTopic() {}
-  MqttTopic(String topic, String payLoad, uint8_t qos = 0)
+  MqttTopicPayload() {}
+  MqttTopicPayload(String topic, String payLoad, uint8_t qos = 0)
   {
     this->topic = topic;
     this->payLoad = payLoad;
@@ -51,7 +51,7 @@ public:
     this->qos = qos;
   }
 
-  bool isTopic(MqttTopic topic)
+  bool isTopic(MqttTopicPayload topic)
   {
     return this->topic.equals(topic.getTopic());
   }

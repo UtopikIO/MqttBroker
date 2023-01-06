@@ -16,7 +16,7 @@ int UnsubscribeMqttMessage::decodeTopics(int index, ReaderMqttPacket packetReade
 {
   while (index < packetReaded.getRemainingPacketLength())
   {
-    MqttTopic topic;
+    MqttTopicPayload topic;
     index = packetReaded.decodeTopic(index, &topic);
     topics.push_back(topic);
   }
