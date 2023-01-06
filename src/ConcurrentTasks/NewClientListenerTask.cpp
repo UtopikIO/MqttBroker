@@ -40,7 +40,6 @@ void NewClientListenerTask::run(void *data)
 
     if (!connectMessage.malFormedPacket() && !broker->isBrokerFullOfClients())
     {
-
       sendAckConnection(client);
       broker->addNewMqttClient(client, connectMessage);
     }
@@ -55,14 +54,12 @@ void NewClientListenerTask::stopListen()
 
 void NewClientListenerTask::sendAckConnection(WiFiClient tcpClient)
 {
-
   String ackPacket = messagesFactory.getAceptedAckConnectMessage().buildMqttPacket();
   sendPacketByTcpConnection(tcpClient, ackPacket);
 }
 
 void NewClientListenerTask::sendPacketByTcpConnection(WiFiClient client, String mqttPacket)
 {
-
   uint8_t buff[mqttPacket.length()];
   mqttPacket.getBytes(buff, mqttPacket.length());
   client.write(buff, mqttPacket.length());

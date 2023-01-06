@@ -13,10 +13,10 @@ MqttBroker::~MqttBroker()
   delete freeMqttClientTask;
 
   // delete all MqttClients
-  std::map<String, MqttClient *>::iterator it;
+  std::vector<MqttClient *>::iterator it;
   for (it = clients.begin(); it != clients.end(); it++)
   {
-    delete it->second;
+    delete *it;
   }
 
   // delete trie
@@ -30,7 +30,7 @@ MqttBroker::MqttBroker(uint16_t port)
   topicTrie = new Trie();
 
   /************* setup queues ***************************/
-  deleteMqttClientQueue = xQueueCreate(1, sizeof(int));
+  deleteMqttClientQueue = xQueueCreate(1, sizeof(std::string *));
   if (deleteMqttClientQueue == NULL)
   {
     log_e("Fail to create queues");
@@ -48,8 +48,11 @@ void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage conne
 {
   String clientId = connectMessage.getClientId();
 
-  std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
-  it = clients.find(clientId.c_str());
+  auto it = find_if(clients.begin(), clients.end(), [&clientId](MqttClient *obj)
+                    { return obj->getId() == clientId; });
+
+  // std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
+  // it = clients.find(clientId.c_str());
   if (it != clients.end())
   {
     log_w("Client %s already exist", clientId.c_str());
@@ -59,7 +62,7 @@ void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage conne
   MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, connectMessage.getClientId(), connectMessage.getKeepAlive(), this);
   mqttClient->startTcpListener();
 
-  clients.insert(std::make_pair(connectMessage.getClientId(), mqttClient));
+  clients.push_back(mqttClient);
 
   log_i("New client added: %s", mqttClient->getId().c_str());
   log_i("%i clients active", clients.size());
@@ -69,20 +72,31 @@ void MqttBroker::deleteMqttClient(String clientId)
 {
   log_i("Deleting client: %s", clientId.c_str());
 
-  std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
-  for (it = clients.begin(); it != clients.end(); it++)
+  auto it = find_if(clients.begin(), clients.end(), [&clientId](MqttClient *obj)
+                    { return obj->getId() == clientId.c_str(); });
+
+  if (it != clients.end())
   {
-    // log_v("%s", it->first.c_str());
-    if (!strcmp(it->first.c_str(), clientId.c_str()))
-    {
-      MqttClient *client = it->second;
-      clients.erase(it);
-      delete client;
-      log_v("Client %s deleted", clientId.c_str());
-      log_i("%i clients active", clients.size());
-      return;
-    }
+    clients.erase(it);
+    delete *it;
+    log_v("Client %s deleted", clientId.c_str());
+    log_i("%i clients active", clients.size());
+    return;
   }
+  // std::map<String, EmbeddedMqttBroker::MqttClient *>::iterator it;
+  // for (it = clients.begin(); it != clients.end(); it++)
+  // {
+  //   // log_v("%s", it->first.c_str());
+  //   if (!strcmp(it->first.c_str(), clientId.c_str()))
+  //   {
+  //     MqttClient *client = it->second;
+  //     clients.erase(it);
+  //     delete client;
+  //     log_v("Client %s deleted", clientId.c_str());
+  //     log_i("%i clients active", clients.size());
+  //     return;
+  //   }
+  // }
 
   log_e("Client %s not found", clientId.c_str());
 
@@ -111,26 +125,40 @@ void MqttBroker::stopBroker()
 
 void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 {
-  std::vector<String> *clientsSubscribedIds = topicTrie->getSubscribedMqttClients(publishMqttMessage->getTopic().getTopic());
+  std::vector<MqttClient *> *clientsSubscribedClients = topicTrie->getSubscribedMqttClients(publishMqttMessage->getTopic().getTopic());
 
   log_v("Publishing to topic %s", publishMqttMessage->getTopic().getTopic().c_str());
 
-  for (std::size_t it = 0; it != clientsSubscribedIds->size(); it++)
+  for (auto &client : *clientsSubscribedClients)
   {
-    clients[clientsSubscribedIds->at(it)]->publishMessage(publishMqttMessage);
+    client->publishMessage(publishMqttMessage);
   }
-  delete clientsSubscribedIds; // topicTrie->getSubscirbedMqttClient() don't free std::vector*
-                               // the user is responsible to free de memory allocated
+
+  // for (std::size_t it = 0; it != clientsSubscribedClients->size(); it++)
+  // {
+  //   // String clientId = clientsSubscribedClients->at(it);
+  //   // auto clientIt = find_if(clients.begin(), clients.end(), [&clientId](MqttClient *obj)
+  //   //                         { return obj->getId() == clientId; });
+  //   *it.publishMessage(publishMqttMessage);
+  // }
+  delete clientsSubscribedClients; // topicTrie->getSubscirbedMqttClient() don't free std::vector*
+                                   // the user is responsible to free de memory allocated
 }
 
 void MqttBroker::SubscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client)
 {
   std::vector<MqttTopic> topics = subscribeMqttMessage->getTopics();
   NodeTrie *node;
-  for (int i = 0; i < topics.size(); i++)
+  for (auto &topic : topics)
   {
-    log_i("Client %s subscribed to %s", client->getId().c_str(), topics[i].getTopic().c_str());
-    node = topicTrie->subscribeToTopic(topics[i].getTopic(), client);
+    node = topicTrie->subscribeToTopic(topic.getTopic(), client);
     client->addNode(node);
+    log_i("Client %s subscribed to %s", client->getId().c_str(), topic.getTopic().c_str());
   }
+  // for (int i = 0; i < topics.size(); i++)
+  // {
+  //   log_i("Client %s subscribed to %s", client->getId().c_str(), topics[i].getTopic().c_str());
+  //   node = topicTrie->subscribeToTopic(topics[i].getTopic(), client);
+  //   client->addNode(node);
+  // }
 }

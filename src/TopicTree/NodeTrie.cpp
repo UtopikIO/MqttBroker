@@ -52,7 +52,7 @@ void NodeTrie::insert(char character, NodeTrie *son)
   if (character == '$')
   {
     this->character = '$';
-    this->subscribedClients = new std::map<String, MqttClient *>;
+    this->subscribedClients = new std::vector<MqttClient *>();
     this->son = son;
   }
   else
@@ -90,19 +90,18 @@ void NodeTrie::takeNew(char character)
 
 void NodeTrie::addSubscribedMqttClient(MqttClient *client)
 {
-  subscribedClients->insert(std::make_pair(client->getId(), client));
+  subscribedClients->push_back(client);
 }
 
-void NodeTrie::findSubscribedMqttClients(std::vector<String> *clientsIds, String topic, int index)
+void NodeTrie::findSubscribedMqttClients(std::vector<MqttClient *> *clients, String topic, int index)
 {
-
   NodeTrie *tmp = this;
   unsigned int i = index;
 
   // when start to explorer a topic level, we need to now
   // if some one subcribed to this level usin "+" or "#" wildcards.
-  tmp->matchWithPlusWildCard(clientsIds, topic, i);
-  tmp->matchWithNumberSignWildCard(clientsIds, topic);
+  tmp->matchWithPlusWildCard(clients, topic, i);
+  tmp->matchWithNumberSignWildCard(clients, topic);
 
   // explore main branch
   while (topic[i] != '$')
@@ -119,7 +118,7 @@ void NodeTrie::findSubscribedMqttClients(std::vector<String> *clientsIds, String
     if (topic[i] == '/')
     {
       // explore "+" and/or "#" sub-branchs if there are present in this level.
-      tmp->findSubscribedMqttClients(clientsIds, topic, i);
+      tmp->findSubscribedMqttClients(clients, topic, i);
     }
     i++; // next character.
   }
@@ -129,17 +128,15 @@ void NodeTrie::findSubscribedMqttClients(std::vector<String> *clientsIds, String
   if ((i == topic.length() - 1) && (tmp->find('$')))
   {
     // insert the mqttClients subscribed to this topic into clients map.
-
-    for (std::map<String, MqttClient *>::iterator it = tmp->getSubscribedMqttClients()->begin(); it != tmp->getSubscribedMqttClients()->end(); ++it)
+    for (std::vector<MqttClient *>::iterator it = tmp->getSubscribedMqttClients()->begin(); it != tmp->getSubscribedMqttClients()->end(); ++it)
     {
-      clientsIds->push_back(it->first);
+      clients->push_back(*it);
     }
   }
 }
 
-void NodeTrie::matchWithPlusWildCard(std::vector<String> *clients, String topic, int index)
+void NodeTrie::matchWithPlusWildCard(std::vector<MqttClient *> *clients, String topic, int index)
 {
-
   NodeTrie *plusWildCard = this->find('+');
   if (plusWildCard == NULL)
   {
@@ -172,9 +169,8 @@ void NodeTrie::matchWithPlusWildCard(std::vector<String> *clients, String topic,
   }
 }
 
-void NodeTrie::matchWithNumberSignWildCard(std::vector<String> *clients, String topic)
+void NodeTrie::matchWithNumberSignWildCard(std::vector<MqttClient *> *clients, String topic)
 {
-
   NodeTrie *numberSingWildCard = this->find('#');
   if (numberSingWildCard == NULL)
   {
@@ -183,4 +179,19 @@ void NodeTrie::matchWithNumberSignWildCard(std::vector<String> *clients, String 
 
   int index = topic.length() - 1;
   numberSingWildCard->findSubscribedMqttClients(clients, topic, index);
+}
+
+void NodeTrie::unSubscribeMqttClient(MqttClient *mqttClient)
+{
+  String clientId = mqttClient->getId();
+  auto it = find_if(subscribedClients->begin(), subscribedClients->end(), [&clientId](MqttClient *obj)
+                    { return obj->getId() == clientId; });
+
+  if (it == subscribedClients->end())
+  {
+    log_e("Client %s not found", clientId);
+    return;
+  }
+
+  subscribedClients->erase(it);
 }
