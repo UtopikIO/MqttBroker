@@ -52,7 +52,7 @@ int ReaderMqttPacket::decodeTextField(int index, String *textField)
   return bytesToString(index, textFieldLengt, textField);
 }
 
-int ReaderMqttPacket::decodeTopic(int index, MqttTopicPayload *topic)
+int ReaderMqttPacket::decodeTopic(int index, MqttTopic *topic)
 {
   String topicAux;
   index = decodeTextField(index, &topicAux);
@@ -61,7 +61,7 @@ int ReaderMqttPacket::decodeTopic(int index, MqttTopicPayload *topic)
   return index;
 }
 
-int ReaderMqttPacket::decodePayLoad(int index, MqttTopicPayload *topic)
+int ReaderMqttPacket::decodePayLoad(int index, MqttTopic *topic)
 {
   size_t length = remainingLengt - index;
   String payLoad;
@@ -74,7 +74,7 @@ int ReaderMqttPacket::decodePayLoad(int index, MqttTopicPayload *topic)
   return index;
 }
 
-int ReaderMqttPacket::decodeQosTopic(int index, MqttTopicPayload *topic)
+int ReaderMqttPacket::decodeQosTopic(int index, MqttTopic *topic)
 {
   topic->setQos(remainingPacket[index]);
   index++;

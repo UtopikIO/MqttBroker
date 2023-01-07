@@ -14,7 +14,7 @@ int SubscribeMqttMessage::decodeTopics(int index, ReaderMqttPacket packetReaded)
 {
   while (index < packetReaded.getRemainingPacketLength())
   {
-    MqttTopicPayload topic;
+    MqttTopic topic;
     index = packetReaded.decodeTopic(index, &topic);
     index = packetReaded.decodeQosTopic(index, &topic);
     topics.push_back(topic);

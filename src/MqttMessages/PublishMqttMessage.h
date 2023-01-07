@@ -4,7 +4,7 @@
 #include "MqttMessage.h"
 #include "ReaderMqttPacket.h"
 #include "MqttMessagesSerealizable.h"
-#include "MqttTopicPayload.h"
+#include "MqttTopic.h"
 
 /**
  * @brief Publish mqtt message, Client can sends a publish mqtt packet
@@ -18,7 +18,7 @@
 class PublishMqttMessage : public MqttMessage, public MqttMessageSerealizable
 {
 private:
-  MqttTopicPayload topicPayload;
+  MqttTopic topic;
   uint16_t messageId;
 
   /**
@@ -34,6 +34,7 @@ public:
   PublishMqttMessage() : MqttMessage(PUBLISH, 0)
   {
   }
+
   /**
    * @brief Construct a new Publish Mqtt Message object, this method
    * create a PublishMqttMessage from raw bytes buffer readed directly
@@ -53,43 +54,44 @@ public:
 
   /**
    * @brief Construct a new Publish Mqtt Message object, with
-   * a MqttTopicPayload object and publishFlags, it is used for create
+   * a MqttTopic object and publishFlags, it is used for create
    * a PublishMqttMessage that broker want to send to clients.
    *
    * @param publishFlags
    * @param topic
    */
-  PublishMqttMessage(uint8_t publishFlags, MqttTopicPayload topicPayload);
+  PublishMqttMessage(uint8_t publishFlags, MqttTopic topic);
 
-  bool isTopic(MqttTopicPayload topicPayload)
+  bool isTopic(MqttTopic topic)
   {
-    return this->topicPayload.isTopic(topicPayload);
+    return this->topic.isTopic(topic);
   }
 
   String buildMqttPacket();
 
-  void setTopic(String topicPayload)
+  void setTopic(String topic)
   {
-    this->topicPayload.setTopic(topicPayload);
+    this->topic.setTopic(topic);
   }
 
   void setPayLoad(String payLoad)
   {
-    this->topicPayload.setPayLoad(payLoad);
+    this->topic.setPayLoad(payLoad);
   }
 
   void setQos(uint8_t qos)
   {
-    this->topicPayload.setQos(qos);
+    this->topic.setQos(qos);
   }
+
   void setMessageId(uint16_t messageId)
   {
     this->messageId = messageId;
   }
 
-  MqttTopicPayload getTopicPayload()
+  MqttTopic getTopic()
   {
-    return topicPayload;
+    return topic;
   }
 };
 

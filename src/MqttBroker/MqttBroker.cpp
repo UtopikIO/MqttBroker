@@ -98,9 +98,9 @@ void MqttBroker::stopBroker()
 
 void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 {
-  std::vector<MqttClient *> *clientsSubscribedClients = topicTrie->getSubscribedMqttClients(publishMqttMessage->getTopicPayload().getTopic());
+  std::vector<MqttClient *> *clientsSubscribedClients = topicTrie->getSubscribedMqttClients(publishMqttMessage->getTopic().getTopic());
 
-  log_v("Publishing to topic %s", publishMqttMessage->getTopicPayload().getTopic().c_str());
+  log_v("Publishing to topic %s", publishMqttMessage->getTopic().getTopic().c_str());
 
   for (auto &client : *clientsSubscribedClients)
   {
@@ -120,7 +120,7 @@ void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 
 void MqttBroker::SubscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client)
 {
-  std::vector<MqttTopicPayload> topics = subscribeMqttMessage->getTopics();
+  std::vector<MqttTopic> topics = subscribeMqttMessage->getTopics();
   NodeTrie *node;
   for (auto &topic : topics)
   {
