@@ -30,7 +30,7 @@ MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClient
 
 void MqttClient::publishMessage(PublishMqttMessage *publishMessage)
 {
-  log_i("%s publish to topic %s", this->clientId.c_str(), publishMessage->getTopic().getTopic().c_str());
+  log_i("%s publish to topic %s", this->clientId.c_str(), publishMessage->getTopicPayload().getTopic().c_str());
   /*
   for qos > 0
   uint8_t publishFlasgs = 0x6 & topics[i].getQos();
@@ -47,7 +47,6 @@ void MqttClient::subscribeToTopic(SubscribeMqttMessage *subscribeMqttMessage)
 
 uint8_t MqttClient::checkConnection()
 {
-
   // check keepAlive
   unsigned long now = millis();
 

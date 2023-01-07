@@ -18,7 +18,7 @@
 class PublishMqttMessage : public MqttMessage, public MqttMessageSerealizable
 {
 private:
-  MqttTopicPayload topic;
+  MqttTopicPayload topicPayload;
   uint16_t messageId;
 
   /**
@@ -59,37 +59,37 @@ public:
    * @param publishFlags
    * @param topic
    */
-  PublishMqttMessage(uint8_t publishFlags, MqttTopicPayload topic);
+  PublishMqttMessage(uint8_t publishFlags, MqttTopicPayload topicPayload);
 
-  bool isTopic(MqttTopicPayload topic)
+  bool isTopic(MqttTopicPayload topicPayload)
   {
-    return this->topic.isTopic(topic);
+    return this->topicPayload.isTopic(topicPayload);
   }
 
   String buildMqttPacket();
 
-  void setTopic(String topic)
+  void setTopic(String topicPayload)
   {
-    this->topic.setTopic(topic);
+    this->topicPayload.setTopic(topicPayload);
   }
 
   void setPayLoad(String payLoad)
   {
-    this->topic.setPayLoad(payLoad);
+    this->topicPayload.setPayLoad(payLoad);
   }
 
   void setQos(uint8_t qos)
   {
-    this->topic.setQos(qos);
+    this->topicPayload.setQos(qos);
   }
   void setMessageId(uint16_t messageId)
   {
     this->messageId = messageId;
   }
 
-  MqttTopicPayload getTopic()
+  MqttTopicPayload getTopicPayload()
   {
-    return topic;
+    return topicPayload;
   }
 };
 

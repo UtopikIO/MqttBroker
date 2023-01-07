@@ -6,7 +6,6 @@ PublishMqttMessage::PublishMqttMessage(uint8_t publishFlags) : MqttMessage(PUBLI
 
 String PublishMqttMessage::buildMqttPacket()
 {
-
   /**
    * there is not message Id field in qos = 0, add this field in next versions.
    *
@@ -18,7 +17,7 @@ String PublishMqttMessage::buildMqttPacket()
 
   // process to concat remainingLength
   // 1ª calculate remainingLengt value
-  size_t remainingLength = topic.getTopicAndPayloadLength() + 2;
+  size_t remainingLength = topicPayload.getTopicAndPayloadLength() + 2;
 
   // 2ª Encode remaininLengt value according mqtt format.
   uint32_t encodedSize = codeSize(remainingLength);
@@ -27,13 +26,13 @@ String PublishMqttMessage::buildMqttPacket()
   mqttPacket = concatEncodedSize(encodedSize, mqttPacket);
 
   // concat topic lengt field, the field have two bytes allways
-  uint8_t MSB = topic.getTopicLength() >> 8;
-  uint8_t LSB = topic.getTopicLength();
+  uint8_t MSB = topicPayload.getTopicLength() >> 8;
+  uint8_t LSB = topicPayload.getTopicLength();
   mqttPacket.concat((char)MSB);
   mqttPacket.concat((char)LSB);
 
   // concat topic and payload.
-  mqttPacket.concat(topic.getTopicAndPayLoad());
+  mqttPacket.concat(topicPayload.getTopicAndPayLoad());
 
   return mqttPacket;
 }
@@ -43,7 +42,7 @@ PublishMqttMessage::PublishMqttMessage(ReaderMqttPacket packetReaded) : MqttMess
   int index = 0;
   messageId = 0;
 
-  index = packetReaded.decodeTopic(index, &topic);
+  index = packetReaded.decodeTopic(index, &topicPayload);
 
   // it is for qos > 0, not implement yet!!
   if ((this->getFlagsControlType() & 0x6) > 0)
@@ -51,7 +50,7 @@ PublishMqttMessage::PublishMqttMessage(ReaderMqttPacket packetReaded) : MqttMess
     index = packetReaded.decodeTwoBytes(index, &messageId);
   }
 
-  index = packetReaded.decodePayLoad(index, &topic);
+  index = packetReaded.decodePayLoad(index, &topicPayload);
 }
 
 String PublishMqttMessage::concatEncodedSize(uint32_t encodedSize, String mqttPacket)
