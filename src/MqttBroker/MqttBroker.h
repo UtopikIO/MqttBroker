@@ -96,7 +96,11 @@ namespace EmbeddedMqttBroker
      * @param subscribeMqttMessage message where is the information of topic.
      * @param client that want to subscribe to the topic.
      */
-    void SubscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client);
+    void subscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client);
+
+    /// @brief Get the clients list
+    /// @return The client list
+    std::vector<MqttClient *> getClients() { return clients; }
 
     /**
      * @brief Set the Max Num Clients that your system can support.

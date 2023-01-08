@@ -43,7 +43,7 @@ void MqttClient::publishMessage(PublishMqttMessage *publishMessage)
 
 void MqttClient::subscribeToTopic(SubscribeMqttMessage *subscribeMqttMessage)
 {
-  broker->SubscribeClientToTopic(subscribeMqttMessage, this);
+  broker->subscribeClientToTopic(subscribeMqttMessage, this);
 }
 
 uint8_t MqttClient::checkConnection()

@@ -118,7 +118,7 @@ void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
                                    // the user is responsible to free de memory allocated
 }
 
-void MqttBroker::SubscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client)
+void MqttBroker::subscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client)
 {
   std::vector<MqttTopic> topics = subscribeMqttMessage->getTopics();
   NodeTrie *node;
