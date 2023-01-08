@@ -30,7 +30,7 @@ MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClient
 
 void MqttClient::publishMessage(PublishMqttMessage *publishMessage)
 {
-  log_i("Topic %s send to %s", publishMessage->getTopic().getTopic().c_str(), this->clientId.c_str());
+  log_v("Topic %s send to %s", publishMessage->getTopic().getTopic().c_str(), this->clientId.c_str());
   log_v("\n%s", publishMessage->getTopic().getPayLoad().c_str());
   /*
   for qos > 0
