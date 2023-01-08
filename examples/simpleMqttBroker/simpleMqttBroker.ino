@@ -1,14 +1,14 @@
 /**
  * @file simpleMqttBroker.ino
  * @author Alex Cajas (alexcajas505@gmail.com)
- * @brief 
+ * @brief
  * Simple example of using this Mqtt Broker
  * @version 1.0.0
  */
 
-#include <WiFi.h> 
+#include <WiFi.h>
 #include "EmbeddedMqttBroker.h"
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 const char *ssid = "...";
 const char *password = "***";
 
@@ -16,7 +16,8 @@ const char *password = "***";
 uint16_t mqttPort = 1883;
 MqttBroker broker(mqttPort);
 
-void setup(){
+void setup()
+{
 
   Serial.begin(115200);
   // Connect to WiFi network
@@ -50,11 +51,8 @@ void setup(){
   Serial.print("and this port: ");
   Serial.println(mqttPort);
   Serial.println("To connect to mqtt broker");
-
 }
 
-void loop(){
-
+void loop()
+{
 }
-
-

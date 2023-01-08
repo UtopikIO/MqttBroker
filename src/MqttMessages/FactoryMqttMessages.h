@@ -10,16 +10,16 @@
 #include "PublishMqttMessage.h"
 #include "NotMqttMessage.h"
 
-
-class FactoryMqttMessages {
-    public:
-        FactoryMqttMessages();
-        MqttMessage decodeMqttPacket(WiFiClient client);
-        MqttMessage decodeMqttPacket(ReaderMqttPacket reader);
-        AckConnectMqttMessage getAceptedAckConnectMessage();
-        PingResMqttMessage getPingResMessage();
-        PublishMqttMessage getPublishMqttMessage(uint8_t publishFlags);
-        ConnectMqttMessage getConnectMqttMessage(WiFiClient client);
+class FactoryMqttMessages
+{
+public:
+  FactoryMqttMessages();
+  MqttMessage decodeMqttPacket(WiFiClient client);
+  MqttMessage decodeMqttPacket(ReaderMqttPacket reader);
+  AckConnectMqttMessage getAceptedAckConnectMessage();
+  PingResMqttMessage getPingResMessage();
+  PublishMqttMessage getPublishMqttMessage(uint8_t publishFlags);
+  ConnectMqttMessage getConnectMqttMessage(WiFiClient client);
 };
 
 #endif

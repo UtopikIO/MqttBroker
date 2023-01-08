@@ -1,21 +1,21 @@
 #include "MqttBroker/MqttBroker.h"
-using namespace mqttBrokerName;
+using namespace EmbeddedMqttBroker;
 /********************** FreeMqttClientTask *************************/
 
-FreeMqttClientTask::FreeMqttClientTask(MqttBroker *broker,QueueHandle_t *deleteMqttClientQueue):Task("FreeMqttClientTask",1024*2,TaskPrio_Low){
-    this->broker = broker;
-    this->deleteMqttClientQueue = deleteMqttClientQueue;
+FreeMqttClientTask::FreeMqttClientTask(MqttBroker *broker, QueueHandle_t *deleteMqttClientQueue) : Task("FreeMqttClientTask", 1024 * 2, TaskPrio_Low)
+{
+  this->broker = broker;
+  this->deleteMqttClientQueue = deleteMqttClientQueue;
 }
 
-void FreeMqttClientTask::run (void * data){
-
-  int clientId;
-  while(true){
-    
+void FreeMqttClientTask::run(void *data)
+{
+  String *clientId = NULL;
+  while (true)
+  {
     xQueueReceive((*deleteMqttClientQueue), &clientId, portMAX_DELAY);
-    Serial.println("deleting client");
-    broker->deleteMqttClient(clientId);
-    
+    log_i("Deleting client: %s", clientId->c_str());
+    broker->deleteMqttClient(clientId->c_str());
+    delete clientId;
   }
-
 }

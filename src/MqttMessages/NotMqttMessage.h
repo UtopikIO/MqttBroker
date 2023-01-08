@@ -5,15 +5,15 @@
 
 /**
  * @brief This class is part of NullObject pattern GRASP.
- * 
+ *
  */
-class NotMqttMessage: public MqttMessage 
+class NotMqttMessage : public MqttMessage
 {
 
 public:
-    NotMqttMessage(/* args */):MqttMessage(-1,0){
-
-    }
+  NotMqttMessage(/* args */) : MqttMessage(-1, 0)
+  {
+  }
 };
 
-#endif //NOTMQTTMESSAGE_H
+#endif // NOTMQTTMESSAGE_H
