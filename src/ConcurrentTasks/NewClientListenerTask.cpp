@@ -1,5 +1,7 @@
 #include "MqttBroker/MqttBroker.h"
+
 using namespace EmbeddedMqttBroker;
+
 /********************** ListenerNewClientTask ******************/
 
 NewClientListenerTask::NewClientListenerTask(MqttBroker *broker, uint16_t port) : Task("ListenerNewClientTask", 1024 * 3, TaskPrio_Mid)
@@ -17,6 +19,7 @@ NewClientListenerTask::~NewClientListenerTask()
 void NewClientListenerTask::run(void *data)
 {
   tcpServer->begin();
+  
   while (true)
   {
     // Check for a new mqtt client connected
@@ -27,15 +30,22 @@ void NewClientListenerTask::run(void *data)
       continue;       // next iteration
     }
 
-    /** if client don't send mqttpacket**/
-    //     if (!client.available())
-    //     {
-    //       continue; // next iteration.
-    //     }
+    // Waiting client to send mqttpacket
+    int count = 1000; // 1 sec
+    for (size_t i = 0; i < count; i += 10)
+    {
+      if (client.available())
+        break;
+      vTaskDelay(100);
+    }
 
-    /*reading bytes from client, in this point Broker only recive and
-     acept connect mqtt packets**/
+    if (!client.available())
+    {
+      continue; // next iteration.
+    }
 
+    /** reading bytes from client, in this point Broker only recive and
+     acept connect mqtt packets **/
     ConnectMqttMessage connectMessage = messagesFactory.getConnectMqttMessage(client);
 
     if (!connectMessage.malFormedPacket() && !broker->isBrokerFullOfClients())
