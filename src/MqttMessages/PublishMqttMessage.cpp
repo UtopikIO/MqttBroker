@@ -13,7 +13,8 @@ String PublishMqttMessage::buildMqttPacket()
   String mqttPacket;
 
   // concat fixed header
-  if (!mqttPacket.concat((char)getTypeAndFlags()))
+  // if (!mqttPacket.concat((char)getTypeAndFlags()))
+  if (!mqttPacket.concat((char)48))
     log_e("Concat error.");
 
   // process to concat remainingLength
