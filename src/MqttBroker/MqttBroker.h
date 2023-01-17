@@ -14,6 +14,7 @@ namespace EmbeddedMqttBroker
 // Depends of your architecture, max num clients is exactly the
 // max num open sockets that your divece can support.
 #define MAXNUMCLIENTS 16
+#define PINGTIMEOUT 500
 
   class NewClientListenerTask;
   class FreeMqttClientTask;
@@ -240,6 +241,8 @@ namespace EmbeddedMqttBroker
     uint16_t keepAlive;
     unsigned long lastAlive;
 
+    uint16_t timeout;
+
     FactoryMqttMessages messagesFactory;
     Action *action;
     QueueHandle_t *deleteMqttClientQueue;
@@ -273,7 +276,8 @@ namespace EmbeddedMqttBroker
      * @param keepAlive max time that the broker wait to a mqtt client, if mqtt client doesn't send
      * any message to the broker in this time, broker will close the tcp connection.
      */
-    MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue, String clientId, uint16_t keepAlive, MqttBroker *broker);
+    MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue, String clientId,
+               uint16_t keepAlive, uint16_t timeout, MqttBroker *broker);
 
     ~MqttClient();
 

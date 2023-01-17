@@ -19,7 +19,7 @@ NewClientListenerTask::~NewClientListenerTask()
 void NewClientListenerTask::run(void *data)
 {
   tcpServer->begin();
-  
+
   while (true)
   {
     // Check for a new mqtt client connected
@@ -41,7 +41,8 @@ void NewClientListenerTask::run(void *data)
 
     if (!client.available())
     {
-      continue; // next iteration.
+      log_w("Client from %s rejected.", client.remoteIP().toString());
+      continue;
     }
 
     /** reading bytes from client, in this point Broker only recive and

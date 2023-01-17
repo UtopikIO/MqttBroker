@@ -15,12 +15,14 @@ MqttClient::~MqttClient()
   }
 }
 
-MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue, String clientId, uint16_t keepAlive, MqttBroker *broker)
+MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClientQueue,
+                       String clientId, uint16_t keepAlive, uint16_t timeout, MqttBroker *broker)
 {
   this->clientId = clientId;
   this->keepAlive = keepAlive;
   this->tcpConnection = tcpConnection;
   this->deleteMqttClientQueue = deleteMqttClientQueue;
+  this->timeout = timeout;
   this->broker = broker;
 
   this->tcpListenerTask = new TCPListenerTask(this);
@@ -48,19 +50,20 @@ void MqttClient::subscribeToTopic(SubscribeMqttMessage *subscribeMqttMessage)
 
 uint8_t MqttClient::checkConnection()
 {
-  // check keepAlive
   unsigned long now = millis();
-
-  if (((now - lastAlive) / 1000) > keepAlive)
-  {
-    tcpConnection.stop();
-  }
 
   if (tcpConnection.connected())
   {
+    // TODO: Analyse keepalive
+    if (now - lastAlive > (keepAlive * 1000) + timeout) // keepAlive (seconds)
+    {
+      log_e("%s didn't send ping on time.", clientId.c_str());
+      log_d("%ims too late.", (now - lastAlive) - (keepAlive * 1000) + timeout);
+      tcpConnection.stop();
+    }
+
     if (tcpConnection.available())
     {
-
       // read mqtt packet
       ReaderMqttPacket reader;
       reader.readMqttPacket(tcpConnection);
@@ -75,6 +78,7 @@ uint8_t MqttClient::checkConnection()
       lastAlive = now;
     }
   }
+
   return tcpConnection.connected(); // If it is recived an Disconnect packet
                                     // connect status changes.
 }
@@ -92,7 +96,7 @@ void MqttClient::sendPacketByTcpConnection(String mqttPacket)
 void MqttClient::sendPingRes()
 {
   String resPacket = messagesFactory.getPingResMessage().buildMqttPacket();
-  log_v("%s sending ping response", this->clientId.c_str());
+  log_v("%s sending ping response.", this->clientId.c_str());
   sendPacketByTcpConnection(resPacket);
 }
 

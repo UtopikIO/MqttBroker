@@ -43,6 +43,7 @@ NodeTrie *Trie::insert(String topic)
     tmp->insert('$', tmp);
     numElem++;
   }
+
   return tmp;
 }
 
@@ -69,6 +70,9 @@ NodeTrie *Trie::subscribeToTopic(String topic, MqttClient *client)
 {
   NodeTrie *aux = insert(topic);
   aux->addSubscribedMqttClient(client);
+
+  log_d("");
+
   return aux;
 }
 
@@ -79,5 +83,6 @@ std::vector<MqttClient *> *Trie::getSubscribedMqttClients(String topic)
   unsigned int i = 0;
   topic += '$';
   tmp->findSubscribedMqttClients(clients, topic, i);
+
   return clients;
 }

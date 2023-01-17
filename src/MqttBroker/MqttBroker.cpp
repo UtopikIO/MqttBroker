@@ -33,7 +33,7 @@ MqttBroker::MqttBroker(uint16_t port)
   deleteMqttClientQueue = xQueueCreate(1, sizeof(std::string *));
   if (deleteMqttClientQueue == NULL)
   {
-    log_e("Fail to create queues");
+    log_e("Fail to create queue.");
     ESP.restart();
   }
 
@@ -57,13 +57,14 @@ void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage conne
     deleteMqttClient(clientId);
   }
 
-  MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, connectMessage.getClientId(), connectMessage.getKeepAlive(), this);
+  MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, connectMessage.getClientId(),
+                                          connectMessage.getKeepAlive(), PINGTIMEOUT, this);
   mqttClient->startTcpListener();
 
   clients.push_back(mqttClient);
 
   log_i("New client added: %s", mqttClient->getId().c_str());
-  log_i("%i clients active", clients.size());
+  log_v("%i clients active.", clients.size());
 }
 
 void MqttBroker::deleteMqttClient(String clientId)
@@ -75,14 +76,14 @@ void MqttBroker::deleteMqttClient(String clientId)
 
   if (it == clients.end())
   {
-    log_e("Client %s not found", clientId.c_str());
+    log_e("Client %s not found.", clientId.c_str());
     return;
   }
 
   clients.erase(it);
   delete *it;
-  log_v("Client %s deleted", clientId.c_str());
-  log_i("%i clients active", clients.size());
+  log_v("Client %s deleted.", clientId.c_str());
+  log_i("%i clients active.", clients.size());
 }
 
 void MqttBroker::startBroker()
@@ -100,7 +101,8 @@ void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 {
   std::vector<MqttClient *> *clientsSubscribedClients = topicTrie->getSubscribedMqttClients(publishMqttMessage->getTopic().getTopic());
 
-  log_v("Publishing to topic %s", publishMqttMessage->getTopic().getTopic().c_str());
+  log_v("Publishing topic: %s", publishMqttMessage->getTopic().getTopic().c_str());
+  log_d("Publishing to %i client(s).", clientsSubscribedClients->size());
 
   for (auto &client : *clientsSubscribedClients)
   {
@@ -128,4 +130,6 @@ void MqttBroker::subscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessa
     client->addNode(node);
     log_i("Client %s subscribed to %s.", client->getId().c_str(), topic.getTopic().c_str());
   }
+
+  
 }

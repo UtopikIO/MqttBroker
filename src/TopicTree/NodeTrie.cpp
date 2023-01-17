@@ -176,8 +176,7 @@ void NodeTrie::unSubscribeMqttClient(MqttClient *mqttClient)
 
   if (it == subscribedClients->end())
   {
-    log_e("Client %s not found", clientId);
-
+    log_e("Client %s not found.", clientId);
     return;
   }
 
