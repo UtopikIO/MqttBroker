@@ -31,7 +31,7 @@ void NewClientListenerTask::run(void *data)
     }
 
     // Waiting client to send mqttpacket
-    int count = 1000; // 1 sec
+    int count = 1000; // 1 sec timeout
     for (size_t i = 0; i < count; i += 10)
     {
       if (client.available())

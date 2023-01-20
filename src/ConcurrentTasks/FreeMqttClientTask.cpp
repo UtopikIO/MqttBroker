@@ -16,6 +16,6 @@ void FreeMqttClientTask::run(void *data)
     xQueueReceive((*deleteMqttClientQueue), &clientId, portMAX_DELAY);
     log_i("Deleting client: %s", clientId->c_str());
     broker->deleteMqttClient(clientId->c_str());
-    delete clientId;
+    // delete clientId;
   }
 }

@@ -28,6 +28,8 @@ MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClient
   this->tcpListenerTask = new TCPListenerTask(this);
   this->tcpListenerTask->setCore(1);
   lastAlive = millis();
+
+  log_v("%s set keepalive to every %ims.", clientId.c_str(), keepAlive*1000);
 }
 
 void MqttClient::publishMessage(PublishMqttMessage *publishMessage)

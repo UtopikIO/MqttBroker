@@ -73,7 +73,8 @@ namespace EmbeddedMqttBroker
      * the data on connect mqtt packet.
      *
      * @param tcpClient socket where is the connection to this client.
-     * @param connectMessage object where are all information to the accepetd connection and his client.
+     * @param connectMessage object where are all information to the accepetd connection and
+     *  his client.
      */
     void addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage connectMessage);
 
@@ -311,9 +312,13 @@ namespace EmbeddedMqttBroker
       std::string *pClientId = new std::string(clientId.c_str());
       log_v("Notify broker to delete client: %s", pClientId->c_str());
       if (xQueueSend((*deleteMqttClientQueue), &pClientId, portMAX_DELAY))
+      {
         deleting = true;
+      }
       else
+      {
         log_e("Queue full. Retrying in few.");
+      }
     }
 
     /**

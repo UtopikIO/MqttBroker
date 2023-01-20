@@ -57,6 +57,7 @@ void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage conne
     deleteMqttClient(clientId);
   }
 
+  log_d("Client available: %s", tcpClient.available() ? "true" : "false");
   MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, connectMessage.getClientId(),
                                           connectMessage.getKeepAlive(), PINGTIMEOUT, this);
   mqttClient->startTcpListener();
@@ -130,6 +131,4 @@ void MqttBroker::subscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessa
     client->addNode(node);
     log_i("Client %s subscribed to %s.", client->getId().c_str(), topic.getTopic().c_str());
   }
-
-  
 }
