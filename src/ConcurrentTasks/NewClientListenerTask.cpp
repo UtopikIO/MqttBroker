@@ -18,6 +18,7 @@ NewClientListenerTask::~NewClientListenerTask()
 
 void NewClientListenerTask::run(void *data)
 {
+  log_v("NewClientListenerTask started.");
   tcpServer->begin();
 
   while (true)
@@ -32,11 +33,14 @@ void NewClientListenerTask::run(void *data)
 
     // Waiting client to send mqttpacket
     int count = 1000; // 1 sec timeout
-    for (size_t i = 0; i < count; i += 10)
+    for (size_t i = 0; i < count; i += 100)
     {
       if (client.available())
+      {
+        log_i("Client from %s is available.", client.remoteIP().toString());
         break;
-      vTaskDelay(100);
+      }
+      vTaskDelay(10);
     }
 
     if (!client.available())
@@ -48,7 +52,6 @@ void NewClientListenerTask::run(void *data)
     /** reading bytes from client, in this point Broker only recive and
      acept connect mqtt packets **/
     ConnectMqttMessage connectMessage = messagesFactory.getConnectMqttMessage(client);
-
     if (!connectMessage.malFormedPacket() && !broker->isBrokerFullOfClients())
     {
       sendAckConnection(client);

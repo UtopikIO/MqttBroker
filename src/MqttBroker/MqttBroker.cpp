@@ -13,11 +13,8 @@ MqttBroker::~MqttBroker()
   delete freeMqttClientTask;
 
   // delete all MqttClients
-  std::vector<MqttClient *>::iterator it;
-  for (it = clients.begin(); it != clients.end(); it++)
-  {
-    delete *it;
-  }
+  for (auto client : clients)
+    delete client;
 
   // delete trie
   delete topicTrie;
@@ -39,7 +36,7 @@ MqttBroker::MqttBroker(uint16_t port)
 
   /************ setup Tasks *****************************/
   this->newClientListenerTask = new NewClientListenerTask(this, port);
-  this->newClientListenerTask->setCore(0);
+  this->newClientListenerTask->setCore(1);
   this->freeMqttClientTask = new FreeMqttClientTask(this, &deleteMqttClientQueue);
   this->freeMqttClientTask->setCore(1);
 }
@@ -47,17 +44,15 @@ MqttBroker::MqttBroker(uint16_t port)
 void MqttBroker::addNewMqttClient(WiFiClient tcpClient, ConnectMqttMessage connectMessage)
 {
   String clientId = connectMessage.getClientId();
-
-  auto it = find_if(clients.begin(), clients.end(), [&clientId](MqttClient *obj)
+  auto it = find_if(clients.begin(), clients.end(), [clientId](MqttClient *obj)
                     { return obj->getId() == clientId; });
 
   if (it != clients.end())
   {
-    log_w("Client %s already exist.", clientId.c_str());
-    deleteMqttClient(clientId);
+    log_w("Client %s already exist.", (*it)->getId().c_str());
+    deleteMqttClient((*it)->getId());
   }
 
-  log_d("Client available: %s", tcpClient.available() ? "true" : "false");
   MqttClient *mqttClient = new MqttClient(tcpClient, &deleteMqttClientQueue, connectMessage.getClientId(),
                                           connectMessage.getKeepAlive(), PINGTIMEOUT, this);
   mqttClient->startTcpListener();
@@ -72,8 +67,9 @@ void MqttBroker::deleteMqttClient(String clientId)
 {
   log_i("Deleting client: %s", clientId.c_str());
 
-  auto it = find_if(clients.begin(), clients.end(), [&clientId](MqttClient *obj)
-                    { return obj->getId() == clientId.c_str(); });
+  std::vector<MqttClient *>::iterator it =
+      find_if(clients.begin(), clients.end(), [clientId](MqttClient *obj)
+              { return obj->getId() == clientId; });
 
   if (it == clients.end())
   {
@@ -123,12 +119,24 @@ void MqttBroker::publishMessage(PublishMqttMessage *publishMqttMessage)
 
 void MqttBroker::subscribeClientToTopic(SubscribeMqttMessage *subscribeMqttMessage, MqttClient *client)
 {
+
   std::vector<MqttTopic> topics = subscribeMqttMessage->getTopics();
   NodeTrie *node;
   for (auto &topic : topics)
   {
+    // String clientId = client->getId();
+    // std::vector<MqttClient *> *clientsSubscribedClients = topicTrie->getSubscribedMqttClients(topic.getTopic());
+    // auto it = find_if(clientsSubscribedClients->begin(), clientsSubscribedClients->end(), [&clientId](const MqttClient &obj)
+    //                   { return obj.getId() == clientId; });
+
+    // if (it == clientsSubscribedClients->end())
+    // {
     node = topicTrie->subscribeToTopic(topic.getTopic(), client);
     client->addNode(node);
     log_i("Client %s subscribed to %s.", client->getId().c_str(), topic.getTopic().c_str());
+    // }
+    // else
+    // {
+    // }
   }
 }

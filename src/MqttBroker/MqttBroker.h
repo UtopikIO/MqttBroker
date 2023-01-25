@@ -287,7 +287,7 @@ namespace EmbeddedMqttBroker
      *
      * @return int id of the client.
      */
-    String getId() { return clientId; }
+    String getId() const { return clientId; }
 
     /**
      * @brief Notify to the listeners of this MqttClient the new publish

@@ -171,12 +171,12 @@ void NodeTrie::matchWithNumberSignWildCard(std::vector<MqttClient *> *clients, S
 void NodeTrie::unSubscribeMqttClient(MqttClient *mqttClient)
 {
   String clientId = mqttClient->getId();
-  auto it = find_if(subscribedClients->begin(), subscribedClients->end(), [&clientId](MqttClient *obj)
+  auto it = find_if(subscribedClients->begin(), subscribedClients->end(), [clientId](MqttClient *obj)
                     { return obj->getId() == clientId; });
 
   if (it == subscribedClients->end())
   {
-    log_e("Client %s not found.", clientId);
+    log_e("%s's subscribtion not found.", clientId);
     return;
   }
 

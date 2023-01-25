@@ -9,9 +9,9 @@ MqttClient::~MqttClient()
   tcpListenerTask->stop();
   delete tcpListenerTask;
 
-  for (int i = 0; i < nodesToFree.size(); i++)
+  for (auto &NodeTrie : nodesToFree)
   {
-    nodesToFree[i]->unSubscribeMqttClient(this);
+    NodeTrie->unSubscribeMqttClient(this);
   }
 }
 
@@ -29,7 +29,7 @@ MqttClient::MqttClient(WiFiClient tcpConnection, QueueHandle_t *deleteMqttClient
   this->tcpListenerTask->setCore(1);
   lastAlive = millis();
 
-  log_v("%s set keepalive to every %ims.", clientId.c_str(), keepAlive*1000);
+  log_v("%s set keepalive to every %ims.", clientId.c_str(), keepAlive * 1000);
 }
 
 void MqttClient::publishMessage(PublishMqttMessage *publishMessage)
